@@ -76,17 +76,24 @@ class LeafDataset(IterableDataset):
 if __name__ == "__main__":
 
     num_workers = 0
-    leaf_dataset = LeafDataset(data_dir="../Plant_leave_diseases_dataset_with_augmentation", num_workers=num_workers)
-    loader = DataLoader(leaf_dataset, batch_size=10, num_workers=num_workers)
+    # leaf_dataset = LeafDataset(data_dir="../Plant_leave_diseases_dataset_with_augmentation", num_workers=num_workers)
+    # loader = DataLoader(leaf_dataset, batch_size=10, num_workers=num_workers)
 
-    start = time.time()
-    for idx, (data, index) in enumerate(tqdm(loader)):
-
-        # print(index.shape)
-        # print(data.shape)
-        pass
+    # start = time.time()
+    # for idx, (data, index) in enumerate(tqdm(loader)):
+    #     pass
     
-    end = time.time()
+    # end = time.time()
 
-    print("time spent:", end-start)
+    # print("time spent:", end-start)
 
+    data_dir = "../Plant_leave_diseases_dataset_without_augmentation"
+
+    length = 0
+    files = os.listdir(data_dir)
+    for file in files:
+        file_path = os.path.join(data_dir, file)
+        image_list = os.listdir(file_path)
+        length += len(image_list)
+
+    print(length)
