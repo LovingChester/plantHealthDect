@@ -8,13 +8,17 @@ import torchvision.transforms.functional as transforms_function
 from torch.utils.data import Dataset, IterableDataset, DataLoader
 import time
 from tqdm import tqdm
+#from config import cfg
+
 
 class LeafDataset(IterableDataset):
 
-    def __init__(self, data_dir, num_workers):
+    def __init__(self, data_dir, augmentation, mode, num_workers):
         # data_dir: directory containing leaf data
         # number of workers used to load data
         self.data_dir = data_dir
+        self.augmentation = augmentation
+        self.mode = mode
 
         if num_workers <= 0:
            self.num_workers = 1
@@ -24,39 +28,40 @@ class LeafDataset(IterableDataset):
         # transform PIL image to tensor
         self.to_tensor = transforms.ToTensor()
 
-        # transform images that are not 256x256
-        self.resize = transforms.Resize((256, 256))
-
     def process_data(self, data_dir, worker_id):
         count = 0
-        files = os.listdir(data_dir)
-        for idx, file in enumerate(files):
-            file_path = os.path.join(data_dir, file)
-            image_list = os.listdir(file_path)
-            for image in image_list:
-                image_path = os.path.join(file_path, image)
-                # converts the image to tensor
-                image_data = self.to_tensor(Image.open(image_path))
+        image_list = os.listdir(data_dir)
+        for image in image_list:
+            # get label
+            _, label = image.split('-')
+            label = int(label.split('.')[0])
 
-                if image_data.shape[0] == 4: continue
+            image_path = os.path.join(data_dir, image)
+            # converts the image to tensor
+            image_data = self.to_tensor(Image.open(image_path).convert('RGB'))
 
-                if image_data.shape[1] != 256 or image_data.shape[2] != 256: 
-                    image_data = self.resize(image_data)
-
-                if count % self.num_workers == worker_id:
-                    yield image_data, torch.tensor(idx)
-                
-                count += 1
+            if count % self.num_workers == worker_id:
+                yield image_data, torch.tensor(label)
+            
+            count += 1
     
     def __len__(self):
-        length = 0
-        files = os.listdir(self.data_dir)
-        for file in files:
-            file_path = os.path.join(self.data_dir, file)
-            image_list = os.listdir(file_path)
-            length += len(image_list)
-
-        return length
+        # without: 55448, with: 61486
+        # train: 90%, valid: 7%, test: 3%
+        if self.augmentation == 'without':
+            if self.mode == 'train':
+                return int(55448 * 0.9)
+            elif self.mode == 'valid':
+                return int(55448 * 0.07)
+            else:
+                return int(55448 * 0.03)
+        else:
+            if self.mode == 'train':
+                return int(61486 * 0.9)
+            elif self.mode == 'valid':
+                return int(61486 * 0.07)
+            else:
+                return int(61486 * 0.03)
     
     def __iter__(self):
         worker = torch.utils.data.get_worker_info()
@@ -67,33 +72,23 @@ class LeafDataset(IterableDataset):
            worker_id = 0
            num_workers = 1
 
-        for idx, (image_data, index) in enumerate(self.process_data(self.data_dir, worker_id)):
-            yield image_data, index
+        for idx, (image_data, label) in enumerate(self.process_data(self.data_dir, worker_id)):
+            yield image_data, label
 
         #return self.process_data(self.data_dir)
 
+def get_data(cfg):
+    train_dataset = LeafDataset(cfg.data.train_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
+    valid_dataset = LeafDataset(cfg.data.valid_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
+    test_dataset = LeafDataset(cfg.data.test_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
+
+    train_loader = DataLoader(train_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
+    valid_loader = DataLoader(valid_dataset, batch_size=1, num_workers=cfg.train.num_workers)
+    test_loader = DataLoader(test_dataset, batch_size=1, num_workers=cfg.train.num_workers)
+
+    return train_loader, valid_loader, test_loader
 
 if __name__ == "__main__":
 
-    num_workers = 0
-    # leaf_dataset = LeafDataset(data_dir="../Plant_leave_diseases_dataset_with_augmentation", num_workers=num_workers)
-    # loader = DataLoader(leaf_dataset, batch_size=10, num_workers=num_workers)
+    pass
 
-    # start = time.time()
-    # for idx, (data, index) in enumerate(tqdm(loader)):
-    #     pass
-    
-    # end = time.time()
-
-    # print("time spent:", end-start)
-
-    data_dir = "../Plant_leave_diseases_dataset_without_augmentation"
-
-    length = 0
-    files = os.listdir(data_dir)
-    for file in files:
-        file_path = os.path.join(data_dir, file)
-        image_list = os.listdir(file_path)
-        length += len(image_list)
-
-    print(length)
