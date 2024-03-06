@@ -41,7 +41,7 @@ class LeafDataset(IterableDataset):
             image_data = self.to_tensor(Image.open(image_path).convert('RGB'))
 
             if count % self.num_workers == worker_id:
-                yield image_data, torch.tensor(label)
+                yield image_data, torch.tensor([label])
             
             count += 1
     
