@@ -31,6 +31,6 @@ cfg.train.lr_decay = 0.9
 cfg.train.lr_decay_every = 3
 cfg.train.shuffle = True
 cfg.train.num_epochs = 100
-cfg.train.num_workers = 2
+cfg.train.num_workers = 0
 
 cfg.train.out_dir = './outputs/dem_derovative1'
