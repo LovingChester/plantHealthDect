@@ -13,11 +13,12 @@ from tqdm import tqdm
 
 class LeafDataset(IterableDataset):
 
-    def __init__(self, data_dir, augmentation, mode, num_workers):
+    def __init__(self, data_dir, augmentation, model, mode, num_workers):
         # data_dir: directory containing leaf data
         # number of workers used to load data
         self.data_dir = data_dir
         self.augmentation = augmentation
+        self.model = model
         self.mode = mode
 
         if num_workers <= 0:
@@ -25,8 +26,10 @@ class LeafDataset(IterableDataset):
         else:
            self.num_workers = num_workers
 
-        # transform PIL image to tensor
-        self.to_tensor = transforms.ToTensor()
+        # transform to tensor, resize to (256, 256) and center crop to (224, 224)
+        self.transform = transforms.Compose([transforms.ToTensor(),
+                                             transforms.Resize((256, 256), antialias=True),
+                                             transforms.CenterCrop(224)])
 
     def process_data(self, data_dir, worker_id):
         count = 0
@@ -35,13 +38,13 @@ class LeafDataset(IterableDataset):
             # get label
             _, label = image.split('-')
             label = int(label.split('.')[0])
-
             image_path = os.path.join(data_dir, image)
-            # converts the image to tensor
-            image_data = self.to_tensor(Image.open(image_path).convert('RGB'))
+
+            # converts the image to tensor, resize image to (256, 256) and center it to (224, 224)
+            image_data = self.transform(Image.open(image_path).convert('RGB'))
 
             if count % self.num_workers == worker_id:
-                yield image_data, torch.tensor([label])
+                yield image_data, torch.tensor(label)
             
             count += 1
     
@@ -53,14 +56,14 @@ class LeafDataset(IterableDataset):
                 return int(55448 * 0.9)
             elif self.mode == 'valid':
                 return int(55448 * 0.07)
-            else:
+            elif self.mode == 'test':
                 return int(55448 * 0.03)
         else:
             if self.mode == 'train':
                 return int(61486 * 0.9)
             elif self.mode == 'valid':
                 return int(61486 * 0.07)
-            else:
+            elif self.mode == 'test':
                 return int(61486 * 0.03)
     
     def __iter__(self):
@@ -78,9 +81,9 @@ class LeafDataset(IterableDataset):
         #return self.process_data(self.data_dir)
 
 def get_data(cfg):
-    train_dataset = LeafDataset(cfg.data.train_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
-    valid_dataset = LeafDataset(cfg.data.valid_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
-    test_dataset = LeafDataset(cfg.data.test_dir, cfg.data.augmentation, cfg.data.mode, cfg.train.num_workers)
+    train_dataset = LeafDataset(cfg.data.train_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
+    valid_dataset = LeafDataset(cfg.data.valid_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
+    test_dataset = LeafDataset(cfg.data.test_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
 
     train_loader = DataLoader(train_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
     valid_loader = DataLoader(valid_dataset, batch_size=1, num_workers=cfg.train.num_workers)
