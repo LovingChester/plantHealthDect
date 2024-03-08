@@ -21,20 +21,29 @@ if not os.path.exists(test_dir):
     os.makedirs(test_dir)
 
 # delete image before putting in any
-images = os.listdir(train_dir)
-for image in images:
-    path = os.path.join(train_dir, image)
-    os.remove(path)
+image_labels = os.listdir(train_dir)
+for label in image_labels:
+    path = os.path.join(train_dir, label)
+    images = os.listdir(path)
+    for image in images:
+        image_path = os.path.join(path, image)
+        os.remove(image_path)
 
-images = os.listdir(valid_dir)
-for image in images:
-    path = os.path.join(valid_dir, image)
-    os.remove(path)
+image_labels = os.listdir(valid_dir)
+for label in image_labels:
+    path = os.path.join(valid_dir, label)
+    images = os.listdir(path)
+    for image in images:
+        image_path = os.path.join(path, image)
+        os.remove(image_path)
 
-images = os.listdir(test_dir)
-for image in images:
-    path = os.path.join(test_dir, image)
-    os.remove(path)
+image_labels = os.listdir(test_dir)
+for label in image_labels:
+    path = os.path.join(test_dir, label)
+    images = os.listdir(path)
+    for image in images:
+        image_path = os.path.join(path, image)
+        os.remove(image_path)
 
 
 # train: 90%, valid: 7%, test: 3%
@@ -53,18 +62,31 @@ for label, file in enumerate(files):
     # convert to set
     train, valid, test = set(train), set(valid), set(test)
 
+    # create subfile for each class
+    train_sub = os.path.join(train_dir, file)
+    if not os.path.exists(train_sub):
+        os.makedirs(train_sub)
+
+    valid_sub = os.path.join(valid_dir, file)
+    if not os.path.exists(valid_sub):
+        os.makedirs(valid_sub)
+
+    test_sub = os.path.join(test_dir, file)
+    if not os.path.exists(test_sub):
+        os.makedirs(test_sub)
+
     for i, image in enumerate(tqdm(image_list)):
         image_path = os.path.join(file_path, image)
         if i in train:
-            image_dest_path = os.path.join(train_dir, "train"+str(train_size)+"-"+str(label)+".jpg")
+            image_dest_path = os.path.join(train_sub, "train"+str(train_size)+".jpg")
             copyfile(image_path, image_dest_path)
             train_size += 1
         elif i in valid:
-            image_dest_path = os.path.join(valid_dir, "valid"+str(valid_size)+"-"+str(label)+".jpg")
+            image_dest_path = os.path.join(valid_sub, "valid"+str(valid_size)+".jpg")
             copyfile(image_path, image_dest_path)
             valid_size += 1
         else:
-            image_dest_path = os.path.join(test_dir, "test"+str(test_size)+"-"+str(label)+".jpg")
+            image_dest_path = os.path.join(test_sub, "test"+str(test_size)+".jpg")
             copyfile(image_path, image_dest_path)
             test_size += 1
     
