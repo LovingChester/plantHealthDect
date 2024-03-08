@@ -3,12 +3,14 @@ import torch.nn as nn
 import numpy as np
 import os
 from PIL import Image
+import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
+import torchvision.datasets as datasets
 import torchvision.transforms.functional as transforms_function
 from torch.utils.data import Dataset, IterableDataset, DataLoader
 import time
 from tqdm import tqdm
-#from config import cfg
+from config import cfg
 
 
 class LeafDataset(IterableDataset):
@@ -30,6 +32,13 @@ class LeafDataset(IterableDataset):
         self.transform = transforms.Compose([transforms.ToTensor(),
                                              transforms.Resize((256, 256), antialias=True),
                                              transforms.CenterCrop(224)])
+        
+        if self.augmentation == 'without':
+            self.normalize = transforms.Normalize(mean=[0.4685, 0.5424, 0.4491],
+                                                std=[0.2337, 0.2420, 0.2531])
+        elif self.augmentation == 'with':
+            self.normalize = transforms.Normalize(mean=[0.4683, 0.5414, 0.4477],
+                                                std= [0.2327, 0.2407, 0.2521])
 
     def process_data(self, data_dir, worker_id):
         count = 0
@@ -42,6 +51,9 @@ class LeafDataset(IterableDataset):
 
             # converts the image to tensor, resize image to (256, 256) and center it to (224, 224)
             image_data = self.transform(Image.open(image_path).convert('RGB'))
+
+            # normalize image
+            #image_data = self.normalize(image_data)
 
             if count % self.num_workers == worker_id:
                 yield image_data, torch.tensor(label)
@@ -81,17 +93,33 @@ class LeafDataset(IterableDataset):
         #return self.process_data(self.data_dir)
 
 def get_data(cfg):
-    train_dataset = LeafDataset(cfg.data.train_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
-    valid_dataset = LeafDataset(cfg.data.valid_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
-    test_dataset = LeafDataset(cfg.data.test_dir, cfg.data.augmentation, cfg.model.name, cfg.data.mode, cfg.train.num_workers)
 
-    train_loader = DataLoader(train_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
-    valid_loader = DataLoader(valid_dataset, batch_size=1, num_workers=cfg.train.num_workers)
-    test_loader = DataLoader(test_dataset, batch_size=1, num_workers=cfg.train.num_workers)
+    if cfg.data.augmentation == 'without':
+        normalize = transforms.Normalize(mean=[0.4685, 0.5424, 0.4491],
+                                        std=[0.2337, 0.2420, 0.2531])
+    elif cfg.data.augmentation == 'with':
+        normalize = transforms.Normalize(mean=[0.4683, 0.5414, 0.4477],
+                                        std= [0.2327, 0.2407, 0.2521])
+
+    transform = transforms.Compose([transforms.Resize((256, 256), antialias=True),
+                                    transforms.CenterCrop(224),
+                                    transforms.ToTensor(), normalize])
+    
+    train_dataset = datasets.ImageFolder(root=cfg.data.train_dir, transform=transform)
+    valid_dataset = datasets.ImageFolder(root=cfg.data.valid_dir, transform=transform)
+    test_dataset = datasets.ImageFolder(root=cfg.data.test_dir, transform=transform)
+
+    train_loader = DataLoader(train_dataset, batch_size=cfg.train.batch_size, shuffle=True, num_workers=cfg.train.num_workers)
+    valid_loader = DataLoader(valid_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
+    test_loader = DataLoader(test_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
 
     return train_loader, valid_loader, test_loader
 
 if __name__ == "__main__":
 
-    pass
-
+    train_loader, valid_loader, test_loader = get_data(cfg)
+    for i, (image_data, label) in enumerate(tqdm(train_loader)):
+        if i == 5: break
+        to_pil = transforms.ToPILImage()
+        plt.imshow(to_pil(image_data[0]))
+        plt.show()
