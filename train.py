@@ -117,13 +117,13 @@ def main():
             best_val_loss = loss_val
             fname = 'model_dict.pth'
             torch.save(model.state_dict(), os.path.join(out_dir, fname))
-            print('=========== model saved at epoch: ', epoch + 1,
+            print('================= model saved at epoch: ', epoch + 1,
                   ' =================')
     
 
     fname = 'model_dict_final.pth'
     torch.save(model.state_dict(), os.path.join(out_dir, fname))
-    print('=========== model saved at the end of the training =================')
+    print('================= model saved at the end of the training =================')
 
     # save loss curves
     plt.figure()
@@ -132,6 +132,10 @@ def main():
     plt.legend(['train loss', 'test loss'])
     fname = os.path.join(out_dir, 'loss.png')
     plt.savefig(fname)
+
+    param = os.path.join(out_dir, 'parameters.txt')
+    with open(param, 'w') as result_file:
+        result_file.write(str(cfg))
 
 if __name__ == "__main__":
     main()
