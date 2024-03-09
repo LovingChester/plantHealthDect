@@ -30,7 +30,7 @@ cfg.train.l2_reg = 0
 cfg.train.lr_decay = 0.9
 cfg.train.lr_decay_every = 3
 cfg.train.shuffle = True
-cfg.train.num_epochs = 2
+cfg.train.num_epochs = 10
 cfg.train.num_workers = 2
 
 cfg.train.weights_without_aug = [44.01, 44.64, 100.81, 16.85, 24.26, 18.46, 32.46, 26.35, 54.04, 23.26, 23.86, 28.15, 
@@ -41,4 +41,4 @@ cfg.train.weights_with_aug = [30.74, 30.74, 30.74, 18.69, 26.9, 20.47, 30.74, 29
                               22.23, 30.74, 28.57, 5.58, 13.38, 30.74, 30.74, 20.8, 30.74, 30.74, 30.74, 30.74, 6.04, 
                               16.75, 30.74, 27.72, 14.45, 30.74, 19.32, 16.1, 30.74, 17.36, 18.34, 21.9, 30.74, 5.74]
 
-cfg.train.out_dir = './outputs'
+cfg.train.out_dir = './outputs/test3'
