@@ -8,8 +8,6 @@ import matplotlib.pyplot as plt
 
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import roc_curve
 from sklearn.metrics import accuracy_score
 
 from data_loaders import get_data
@@ -30,7 +28,10 @@ def evaluate():
     model.to(device)
 
     out_dir = cfg.train.out_dir
-    fname = os.path.join(out_dir, 'model_dict.pth')
+    if cfg.eval.mode == 'best':
+        fname = os.path.join(out_dir, 'model_dict.pth')
+    elif cfg.eval.mode == 'final':
+        fname = os.path.join(out_dir, 'model_dict_final.pth')
     model.load_state_dict(torch.load(fname))
     model.eval()
 
