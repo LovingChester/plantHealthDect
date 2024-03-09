@@ -29,8 +29,8 @@ def get_data(cfg):
     test_dataset = datasets.ImageFolder(root=cfg.data.test_dir, transform=transform)
 
     train_loader = DataLoader(train_dataset, batch_size=cfg.train.batch_size, shuffle=True, num_workers=cfg.train.num_workers)
-    valid_loader = DataLoader(valid_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
-    test_loader = DataLoader(test_dataset, batch_size=cfg.train.batch_size, num_workers=cfg.train.num_workers)
+    valid_loader = DataLoader(valid_dataset, batch_size=cfg.eval.batch_size, num_workers=cfg.eval.num_workers)
+    test_loader = DataLoader(test_dataset, batch_size=cfg.eval.batch_size, num_workers=cfg.eval.num_workers)
 
     return train_loader, valid_loader, test_loader
 
