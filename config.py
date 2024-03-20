@@ -7,7 +7,7 @@ cfg = edict()
 # Model
 cfg.model = edict()
 # 'vgg16', 'vit'
-cfg.model.name = 'vgg16'
+cfg.model.name = 'vit'
 
 # Data
 # without: 55448, with: 61486
@@ -40,7 +40,7 @@ cfg.train.weights_with_aug = [30.74, 30.74, 30.74, 18.69, 26.9, 20.47, 30.74, 29
                               22.23, 30.74, 28.57, 5.58, 13.38, 30.74, 30.74, 20.8, 30.74, 30.74, 30.74, 30.74, 6.04, 
                               16.75, 30.74, 27.72, 14.45, 30.74, 19.32, 16.1, 30.74, 17.36, 18.34, 21.9, 30.74, 5.74]
 
-cfg.train.out_dir = './outputs/test1'
+cfg.train.out_dir = './outputs/test4'
 
 # Evaluation details
 cfg.eval = edict()
