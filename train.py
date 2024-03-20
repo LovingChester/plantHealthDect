@@ -62,6 +62,30 @@ def main():
             'output directory ', out_dir,
             ' already exists. Make sure you are not overwriting previously trained model...'
         )
+    
+    # load the model if exists
+    final_checkpoint = 'model_dict_final.pth'
+    final_checkpoint = os.path.join(out_dir, final_checkpoint)
+    if os.path.exists(final_checkpoint):
+        model.load_state_dict(torch.load(final_checkpoint))
+        loss_val = 0
+        model.eval()
+        cfg.data.mode = 'valid'
+        with torch.no_grad():
+            for i, (image_data, label) in enumerate(val_loader):
+                optim.zero_grad()  # clear gradients
+
+                image_data = image_data.to(device)
+                label = label.to(device)
+
+                output = model(image_data)
+
+                loss = criterion(output, label)
+                loss_val += loss.item()
+        
+        # end of validation
+        loss_val /= len(val_loader)
+        best_val_loss = loss_val
 
     train_loss_log = []
     val_loss_log = []
@@ -115,14 +139,14 @@ def main():
 
         if loss_val < best_val_loss:
             best_val_loss = loss_val
+            # save the model if it performs better previously saved model
             fname = 'model_dict.pth'
             torch.save(model.state_dict(), os.path.join(out_dir, fname))
             print('================= model saved at epoch: ', epoch + 1,
                   ' =================')
     
-
-    fname = 'model_dict_final.pth'
-    torch.save(model.state_dict(), os.path.join(out_dir, fname))
+    # save the model in the end
+    torch.save(model.state_dict(), final_checkpoint)
     print('================= model saved at the end of the training =================')
 
     # save loss curves
