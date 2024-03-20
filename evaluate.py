@@ -6,9 +6,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 
 from data_loaders import get_data
 from config import cfg
@@ -75,8 +73,21 @@ def evaluate():
             test_y_pred.extend(pred)
             test_y_true.extend(label)
     
+    test_y_pred = np.array(test_y_pred)
+    test_y_true = np.array(test_y_true)
     test_acc = accuracy_score(test_y_true, test_y_pred)
     print(test_acc)
+
+    cm = confusion_matrix(test_y_true, test_y_pred)
+
+    # stores the accuracy for each class
+    acc_class = []
+    for i in range(39):
+        acc = cm[i, i] / sum(cm[i])
+        acc_class.append(acc)
+        print('class {}: {:.3f}'.format(i, acc))
+
+    print('average accuracy of class accuracy: {:.3f}'.format(np.mean(acc_class)))
 
 if __name__ == "__main__":
     evaluate()
