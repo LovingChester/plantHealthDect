@@ -79,14 +79,13 @@ for label, file in enumerate(files):
         image_path = os.path.join(file_path, image)
         if i in train:
             image_dest_path = os.path.join(train_sub, "train"+str(train_size)+".jpg")
-            copyfile(image_path, image_dest_path)
             train_size += 1
         elif i in valid:
             image_dest_path = os.path.join(valid_sub, "valid"+str(valid_size)+".jpg")
-            copyfile(image_path, image_dest_path)
             valid_size += 1
         else:
             image_dest_path = os.path.join(test_sub, "test"+str(test_size)+".jpg")
-            copyfile(image_path, image_dest_path)
             test_size += 1
+        
+        copyfile(image_path, image_dest_path)
     
