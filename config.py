@@ -18,6 +18,10 @@ cfg.data.train_dir = '../Plant_leave_diseases_split_' + cfg.data.augmentation + 
 cfg.data.valid_dir = '../Plant_leave_diseases_split_' + cfg.data.augmentation + '_augmentation/valid'
 cfg.data.test_dir = '../Plant_leave_diseases_split_' + cfg.data.augmentation + '_augmentation/test'
 
+cfg.data.leaf_train_dir = '../leave_non_leave_split_' + cfg.data.augmentation + '_augmentation/train'
+cfg.data.leaf_valid_dir = '../leave_non_leave_split_' + cfg.data.augmentation + '_augmentation/valid'
+cfg.data.leaf_test_dir = '../leave_non_leave_split_' + cfg.data.augmentation + '_augmentation/test'
+
 cfg.data.mode = 'train'
 
 # Training details
