@@ -6,7 +6,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, matthews_corrcoef, f1_score
 
 from data_loaders import get_data
 from config import cfg
@@ -33,7 +33,29 @@ def evaluate():
     model.load_state_dict(torch.load(fname))
     model.eval()
 
-    _, val_loader, test_loader = get_data(cfg)
+    train_loader, val_loader, test_loader = get_data(cfg)
+
+    # keep track of prediction and true label
+    train_y_pred = []
+    train_y_true = []
+
+    with torch.no_grad():
+        for i, (image_data, label) in enumerate(train_loader):
+            
+            image_data = image_data.to(device)
+            #label = label.to(device)
+
+            output = model(image_data)
+            pred = F.softmax(output, dim=1)
+            pred = torch.argmax(pred, dim=1)
+
+            pred = pred.cpu().detach().numpy().tolist()
+            train_y_pred.extend(pred)
+            train_y_true.extend(label)
+    
+    print('Train accuracy: {:.4f}'.format(accuracy_score(train_y_true, train_y_pred)))
+    print('Train Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(train_y_true, train_y_pred)))
+    print('Train F1 score: {:.4f}'.format(f1_score(train_y_true, train_y_pred, average='micro')))
 
     # keep track of prediction and true label
     val_y_pred = []
@@ -53,8 +75,9 @@ def evaluate():
             val_y_pred.extend(pred)
             val_y_true.extend(label)
     
-    val_acc = accuracy_score(val_y_true, val_y_pred)
-    print(val_acc)
+    print('Validation accuracy: {:.4f}'.format(accuracy_score(val_y_true, val_y_pred)))
+    print('Validation Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(val_y_true, val_y_pred)))
+    print('Test F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='micro')))
 
     test_y_pred = []
     test_y_true = []
@@ -75,8 +98,7 @@ def evaluate():
     
     test_y_pred = np.array(test_y_pred)
     test_y_true = np.array(test_y_true)
-    test_acc = accuracy_score(test_y_true, test_y_pred)
-    print(test_acc)
+    print('Test accuracy: {:.4f}'.format(accuracy_score(test_y_true, test_y_pred)))
 
     cm = confusion_matrix(test_y_true, test_y_pred)
 
@@ -85,9 +107,11 @@ def evaluate():
     for i in range(39):
         acc = cm[i, i] / sum(cm[i])
         acc_class.append(acc)
-        print('class {}: {:.3f}'.format(i, acc))
+        print('Class {}: {:.4f}'.format(i, acc))
 
-    print('average accuracy of class accuracy: {:.3f}'.format(np.mean(acc_class)))
+    print('Average accuracy of class accuracy: {:.4f}'.format(np.mean(acc_class)))
+    print('Test Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(test_y_true, test_y_pred)))
+    print('Test F1 score: {:.4f}'.format(f1_score(test_y_true, test_y_pred, average='micro')))
 
 if __name__ == "__main__":
     evaluate()
