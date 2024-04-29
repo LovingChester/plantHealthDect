@@ -82,7 +82,7 @@ def evaluate():
     print('Valication precision: {:.4f}'.format(precision_score(val_y_true, val_y_pred, average='weighted')))
     print('Validation recall: {:.4f}'.format(recall_score(val_y_true, val_y_pred, average='weighted')))
     print('Validation Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(val_y_true, val_y_pred)))
-    print('Test F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='weighted')))
+    print('Validation F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='weighted')))
 
     test_y_pred = []
     test_y_true = []
