@@ -6,7 +6,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import accuracy_score, confusion_matrix, matthews_corrcoef, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix, \
+    matthews_corrcoef, f1_score, precision_score, recall_score
 
 from data_loaders import get_data
 from config import cfg
@@ -54,8 +55,10 @@ def evaluate():
             train_y_true.extend(label)
     
     print('Train accuracy: {:.4f}'.format(accuracy_score(train_y_true, train_y_pred)))
+    print('Train precision: {:.4f}'.format(precision_score(train_y_true, train_y_pred, average='weighted')))
+    print('Train recall: {:.4f}'.format(recall_score(train_y_true, train_y_pred, average='weighted')))
     print('Train Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(train_y_true, train_y_pred)))
-    print('Train F1 score: {:.4f}'.format(f1_score(train_y_true, train_y_pred, average='micro')))
+    print('Train F1 score: {:.4f}'.format(f1_score(train_y_true, train_y_pred, average='weighted')))
 
     # keep track of prediction and true label
     val_y_pred = []
@@ -76,8 +79,10 @@ def evaluate():
             val_y_true.extend(label)
     
     print('Validation accuracy: {:.4f}'.format(accuracy_score(val_y_true, val_y_pred)))
+    print('Valication precision: {:.4f}'.format(precision_score(val_y_true, val_y_pred, average='weighted')))
+    print('Validation recall: {:.4f}'.format(recall_score(val_y_true, val_y_pred, average='weighted')))
     print('Validation Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(val_y_true, val_y_pred)))
-    print('Test F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='micro')))
+    print('Test F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='weighted')))
 
     test_y_pred = []
     test_y_true = []
@@ -98,20 +103,14 @@ def evaluate():
     
     test_y_pred = np.array(test_y_pred)
     test_y_true = np.array(test_y_true)
+
+    # cm = confusion_matrix(test_y_true, test_y_pred)
+
     print('Test accuracy: {:.4f}'.format(accuracy_score(test_y_true, test_y_pred)))
-
-    cm = confusion_matrix(test_y_true, test_y_pred)
-
-    # stores the accuracy for each class
-    acc_class = []
-    for i in range(39):
-        acc = cm[i, i] / sum(cm[i])
-        acc_class.append(acc)
-        print('Class {}: {:.4f}'.format(i, acc))
-
-    print('Average accuracy of class accuracy: {:.4f}'.format(np.mean(acc_class)))
+    print('Test precision: {:.4f}'.format(precision_score(test_y_true, test_y_pred, average='weighted')))
+    print('Test recall: {:.4f}'.format(recall_score(test_y_true, test_y_pred, average='weighted')))
     print('Test Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(test_y_true, test_y_pred)))
-    print('Test F1 score: {:.4f}'.format(f1_score(test_y_true, test_y_pred, average='micro')))
+    print('Test F1 score: {:.4f}'.format(f1_score(test_y_true, test_y_pred, average='weighted')))
 
 if __name__ == "__main__":
     evaluate()
