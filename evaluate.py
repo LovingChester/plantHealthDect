@@ -54,11 +54,11 @@ def evaluate():
             train_y_pred.extend(pred)
             train_y_true.extend(label)
     
-    print('Train accuracy: {:.4f}'.format(accuracy_score(train_y_true, train_y_pred)))
-    print('Train precision: {:.4f}'.format(precision_score(train_y_true, train_y_pred, average='weighted')))
-    print('Train recall: {:.4f}'.format(recall_score(train_y_true, train_y_pred, average='weighted')))
-    print('Train Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(train_y_true, train_y_pred)))
-    print('Train F1 score: {:.4f}'.format(f1_score(train_y_true, train_y_pred, average='weighted')))
+    print('Train accuracy: {:.4f}'.format(accuracy_score(train_y_true, train_y_pred)*100))
+    print('Train precision: {:.4f}'.format(precision_score(train_y_true, train_y_pred, average='weighted')*100))
+    print('Train recall: {:.4f}'.format(recall_score(train_y_true, train_y_pred, average='weighted')*100))
+    print('Train Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(train_y_true, train_y_pred)*100))
+    print('Train F1 score: {:.4f}'.format(f1_score(train_y_true, train_y_pred, average='weighted')*100))
 
     # keep track of prediction and true label
     val_y_pred = []
@@ -78,11 +78,11 @@ def evaluate():
             val_y_pred.extend(pred)
             val_y_true.extend(label)
     
-    print('Validation accuracy: {:.4f}'.format(accuracy_score(val_y_true, val_y_pred)))
-    print('Valication precision: {:.4f}'.format(precision_score(val_y_true, val_y_pred, average='weighted')))
-    print('Validation recall: {:.4f}'.format(recall_score(val_y_true, val_y_pred, average='weighted')))
-    print('Validation Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(val_y_true, val_y_pred)))
-    print('Validation F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='weighted')))
+    print('Validation accuracy: {:.4f}'.format(accuracy_score(val_y_true, val_y_pred)*100))
+    print('Valication precision: {:.4f}'.format(precision_score(val_y_true, val_y_pred, average='weighted')*100))
+    print('Validation recall: {:.4f}'.format(recall_score(val_y_true, val_y_pred, average='weighted')*100))
+    print('Validation Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(val_y_true, val_y_pred)*100))
+    print('Validation F1 score: {:.4f}'.format(f1_score(val_y_true, val_y_pred, average='weighted')*100))
 
     test_y_pred = []
     test_y_true = []
@@ -106,11 +106,11 @@ def evaluate():
 
     # cm = confusion_matrix(test_y_true, test_y_pred)
 
-    print('Test accuracy: {:.4f}'.format(accuracy_score(test_y_true, test_y_pred)))
-    print('Test precision: {:.4f}'.format(precision_score(test_y_true, test_y_pred, average='weighted')))
-    print('Test recall: {:.4f}'.format(recall_score(test_y_true, test_y_pred, average='weighted')))
-    print('Test Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(test_y_true, test_y_pred)))
-    print('Test F1 score: {:.4f}'.format(f1_score(test_y_true, test_y_pred, average='weighted')))
+    print('Test accuracy: {:.4f}'.format(accuracy_score(test_y_true, test_y_pred)*100))
+    print('Test precision: {:.4f}'.format(precision_score(test_y_true, test_y_pred, average='weighted')*100))
+    print('Test recall: {:.4f}'.format(recall_score(test_y_true, test_y_pred, average='weighted')*100))
+    print('Test Matthew\'s Correlation Coefficient: {:.4f}'.format(matthews_corrcoef(test_y_true, test_y_pred)*100))
+    print('Test F1 score: {:.4f}'.format(f1_score(test_y_true, test_y_pred, average='weighted')*100))
 
 if __name__ == "__main__":
     evaluate()
