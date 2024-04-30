@@ -9,7 +9,6 @@ import random
 from torchinfo import summary
 
 from resnet18 import ResNet, BasicBlock
-# from resnet18_torchvision import build_model
 from training_utils import train, validate
 from utils import save_plots, get_data
 
@@ -47,14 +46,9 @@ resnet18_pretrained = models.resnet18(weights='IMAGENET1K_V1')
 if args['model'] == 'scratch':
     print('[INFO]: Training ResNet18 built from scratch...')
     model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=39, droprate=0.5).to(device)
-    # model.load_state_dict(resnet18_pretrained.state_dict(), strict=False)
     plot_name = 'resnet_scratch'
-if args['model'] == 'torchvision':
-    print('[INFO]: Training the Torchvision ResNet18 model...')
-    model = build_model(pretrained=False, fine_tune=True, num_classes=10).to(device) 
-    plot_name = 'resnet_torchvision'
 
-# summary of the model used
+# summary of the model
 summary(model=model, 
         input_size=(32, 3, 224, 224),
         col_names=['input_size', "output_size", "num_params", "trainable"],
