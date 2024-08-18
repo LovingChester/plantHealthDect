@@ -35,4 +35,11 @@ Desired file structure:
 ## Training
 In order to perform training, you can first go to `config.py` file to adjust the model, hyperparameters, and output directory. For model, you can choose between VGG-16 and Vision Transformer. For hyperparameter, you can adjust learning rate, L2 regularization, number of epoches, etc.  
 If you are satisified with the model and hyperparameter, you can start training by using the command:  
-`python train.py`
+`python train.py`  
+At the end of the training, the trained model checkpoint and training logs will be saved in the cfg.train.out_dir specified in the config.py file.  
+
+
+## Validation and Testing
+To evaluate a trained model, set the same cfg.train.out_dir in config.py that was used to train the model and run the command:  
+`python evaluate.py`
+Metrics will be displayed in the terminal.  
