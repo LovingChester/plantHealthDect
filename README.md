@@ -16,7 +16,8 @@ Scikit-Learn:
 `pip install -U scikit-learn`  
 
 ### Dataset
-The dataset is publicly visible at [PlantVillage](https://paperswithcode.com/dataset/plantvillage). After downloading all the files, unzip them and keep the file structure. Next, using the following command to split the data into training, validation, testing set: `Python train_test_split.py`.
+The dataset is publicly visible at [PlantVillage](https://paperswithcode.com/dataset/plantvillage). After downloading all the files, unzip them and keep the file structure. Next, using the following command to split the data into training, validation, testing set:  
+`python train_test_split.py`.
 
 Desired file structure:  
 ├── src  
@@ -31,4 +32,5 @@ Desired file structure:
 
 ## Training
 In order to perform training, you can first go to `config.py` file to adjust the model, hyperparameters, and output directory. For model, you can choose between VGG-16 and Vision Transformer. For hyperparameter, you can adjust learning rate, L2 regularization, number of epoches, etc.  
-If you are satisified with the model and hyperparameter, you can start training by using the command ''
+If you are satisified with the model and hyperparameter, you can start training by using the command:  
+`python train.py`
