@@ -2,13 +2,13 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, models
-import argparse
 import numpy as np
+import os
+import argparse
 import random
 from torchinfo import summary
 
 from resnet18 import ResNet, BasicBlock
-# from resnet18_torchvision import build_model
 from training_utils import train, validate
 from utils import save_plots, get_data
 
@@ -21,15 +21,15 @@ parser.add_argument(
 args = vars(parser.parse_args())
 
 # Set seed.
-seed = 527
-torch.manual_seed(seed)
-torch.cuda.manual_seed(seed)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = True
-np.random.seed(seed)
-random.seed(seed)
+# seed = 527
+# torch.manual_seed(seed)
+# torch.cuda.manual_seed(seed)
+# torch.backends.cudnn.deterministic = True
+# torch.backends.cudnn.benchmark = True
+# np.random.seed(seed)
+# random.seed(seed)
 
-# Learning and training parameters.
+# learning and training parameters
 epochs = 30
 batch_size = 64
 learning_rate = 0.01
@@ -42,18 +42,13 @@ valid_loader = loaders['valid']
 
 resnet18_pretrained = models.resnet18(weights='IMAGENET1K_V1')
 
-# Define model based on the argument parser string.
+# define model based on the argument parser string
 if args['model'] == 'scratch':
     print('[INFO]: Training ResNet18 built from scratch...')
-    model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=39).to(device)
-    # model.load_state_dict(resnet18_pretrained.state_dict(), strict=False)
+    model = ResNet(img_channels=3, num_layers=18, block=BasicBlock, num_classes=39, droprate=0.5).to(device)
     plot_name = 'resnet_scratch'
-if args['model'] == 'torchvision':
-    print('[INFO]: Training the Torchvision ResNet18 model...')
-    model = build_model(pretrained=False, fine_tune=True, num_classes=10).to(device) 
-    plot_name = 'resnet_torchvision'
 
-# summary of the model used
+# summary of the model
 summary(model=model, 
         input_size=(32, 3, 224, 224),
         col_names=['input_size', "output_size", "num_params", "trainable"],
@@ -93,7 +88,7 @@ if __name__ == '__main__':
         print(f"Validation loss: {valid_epoch_loss:.3f}, validation acc: {valid_epoch_acc:.3f}")
         print('-'*50)
         
-    # Save the loss and accuracy plots.
+    # save the loss and accuracy plots.
     save_plots(
         train_acc, 
         valid_acc, 
@@ -101,5 +96,11 @@ if __name__ == '__main__':
         valid_loss, 
         name=plot_name
     )
+
+    # save the model state dict
+    MODEL_SAVE_PATH = os.path.join('outputs', 'resnet18.pth')
+    print(f"Saving model to: {MODEL_SAVE_PATH}")
+    torch.save(obj=model.state_dict(), f=MODEL_SAVE_PATH)
+
     print('TRAINING COMPLETE')
 
