@@ -41,5 +41,5 @@ At the end of the training, the trained model checkpoint and training logs will 
 
 ## Validation and Testing
 To evaluate a trained model, set the same cfg.train.out_dir in config.py that was used to train the model and run the command:  
-`python evaluate.py`
+`python evaluate.py`  
 Metrics will be displayed in the terminal.  
